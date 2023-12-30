@@ -13,9 +13,3 @@ export function minutesToMs(minutes: number | string) {
 export function secondsToMs(seconds: number | string) {
   return Number(seconds) * MILLISECONDS_PER_SECOND;
 }
-
-export function offsetToMs(offset: string | number) {
-  const [minutes, seconds] = String(offset).split('.');
-
-  return minutesToMs(minutes) + Number(seconds || 0);
-}
