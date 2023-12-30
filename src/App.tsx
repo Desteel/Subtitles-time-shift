@@ -1,9 +1,13 @@
-import { useEffect, useState } from 'react';
-import { getFile, saveFile } from './helpers';
+import { ChangeEventHandler, useRef, useState } from 'react';
+import { getFile, saveToFile } from './helpers';
 import { Button } from './components/Button';
+import { getTextWithUpdatedOffset, offsetToMs } from './utils';
+import { Input } from './components/Input';
+
+const SRT_MIME_TYPE = 'text/plain';
 
 const PICKER_OPTIONS: FilePickerOptions = {
-  types: [{ accept: { 'text/plain': ['.srt'] } }],
+  types: [{ accept: { [SRT_MIME_TYPE]: ['.srt'] } }],
   excludeAcceptAllOption: true,
 };
 
@@ -14,20 +18,19 @@ const OPEN_FILE_PICKER_OPTIONS: OpenFilePickerOptions = {
 
 function App() {
   const [file, setFile] = useState<File>();
-  const [text, setText] = useState('');
+  const [text, setText] = useState<string>();
+  const [updatedTextBlob, setUpdatedTextBlob] = useState<Blob>();
 
-  const [updatedFile, setUpdatedFile] = useState<File>();
+  const offsetRef = useRef(0);
 
   const fileName = file?.name;
 
-  console.log(file);
-
-  // !Temp effect
-  useEffect(() => {
-    if (file) {
-      setUpdatedFile(file);
+  const setOffset: ChangeEventHandler<HTMLInputElement> = (event) => {
+    const offset = Number(event.target.value);
+    if (Number.isInteger(offset)) {
+      offsetRef.current = offsetToMs(offset);
     }
-  }, [file]);
+  };
 
   const handleOpenFileClick = async () => {
     try {
@@ -43,20 +46,40 @@ function App() {
     }
   };
 
-  const handleSaveFileClick = async () => {
-    if (!updatedFile) return;
+  const handleApplyOffsetClick = async () => {
+    if (text) {
+      const textWithUpdatedOffset = getTextWithUpdatedOffset(text, offsetRef.current);
 
-    await saveFile(updatedFile, {
-      ...PICKER_OPTIONS,
-      suggestedName: fileName,
-    });
+      const blob = new Blob([textWithUpdatedOffset], { type: SRT_MIME_TYPE });
+      setUpdatedTextBlob(blob);
+    }
+  };
+
+  const handleSaveFileClick = async () => {
+    if (updatedTextBlob) {
+      await saveToFile(updatedTextBlob, { ...PICKER_OPTIONS, suggestedName: fileName });
+    }
   };
 
   return (
     <div>
       <Button onClick={handleOpenFileClick}>Open .srt file</Button>
-      {fileName && <div>{fileName}</div>}
-      {updatedFile && <Button onClick={handleSaveFileClick}>Save .srt file</Button>}
+
+      {!!file && (
+        <>
+          {!!fileName && <div>{fileName}</div>}
+          <Input
+            label='Enter offset in format "seconds.milliseconds"'
+            placeholder="0.00"
+            type="number"
+            onChange={setOffset}
+            defaultValue={offsetRef.current > 0 ? offsetRef.current : undefined}
+          />
+          <Button onClick={handleApplyOffsetClick}>Apply offset</Button>
+        </>
+      )}
+
+      {!!updatedTextBlob && <Button onClick={handleSaveFileClick}>Save updated .srt file</Button>}
     </div>
   );
 }

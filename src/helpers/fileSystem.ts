@@ -1,4 +1,4 @@
-export async function getFile({ ...options }: OpenFilePickerOptions) {
+export async function getFile(options?: OpenFilePickerOptions) {
   try {
     const [fileHandle] = await window.showOpenFilePicker(options);
 
@@ -8,13 +8,13 @@ export async function getFile({ ...options }: OpenFilePickerOptions) {
   }
 }
 
-export async function saveFile(data: FileSystemWriteChunkType, options?: SaveFilePickerOptions) {
+export async function saveToFile(data: FileSystemWriteChunkType, options?: SaveFilePickerOptions) {
   try {
-    const fileSystemFileHandle = await window.showSaveFilePicker(options);
-    const writableStream = await fileSystemFileHandle.createWritable();
+    const fileHandle = await window.showSaveFilePicker(options);
+    const writableFileStream = await fileHandle.createWritable();
 
-    await writableStream.write(data);
-    await writableStream.close();
+    await writableFileStream.write(data);
+    await writableFileStream.close();
   } catch (error) {
     console.error(error);
   }
