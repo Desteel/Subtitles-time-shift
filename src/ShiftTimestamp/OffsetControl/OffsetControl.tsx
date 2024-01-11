@@ -1,7 +1,7 @@
 import { useRef, ChangeEventHandler } from 'react';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
-import { minutesToMs } from '../utils';
+import { secondsToMs } from '../utils';
 
 export type OffsetControlProps = {
   onApplyOffsetClick: (offset: number) => void;
@@ -9,10 +9,12 @@ export type OffsetControlProps = {
   initialOffset: number;
 }>;
 
-function offsetToMs(offset: string | number) {
-  const [minutes, seconds] = String(offset).split('.');
+function offsetToMs(offset: number) {
+  const sign = Math.sign(offset);
+  const absoluteOffset = Math.abs(offset);
+  const [seconds, milliseconds = 0] = String(absoluteOffset).split('.');
 
-  return minutesToMs(minutes) + Number(seconds || 0);
+  return (secondsToMs(seconds) + Number(milliseconds)) * sign;
 }
 
 export function OffsetControl({ initialOffset = 0, onApplyOffsetClick }: OffsetControlProps) {
@@ -31,7 +33,7 @@ export function OffsetControl({ initialOffset = 0, onApplyOffsetClick }: OffsetC
 
   const getInputDefaultValue = () => {
     const { current } = offsetRef;
-    return current > 0 ? current : undefined;
+    return current !== 0 ? current : undefined;
   };
 
   return (
