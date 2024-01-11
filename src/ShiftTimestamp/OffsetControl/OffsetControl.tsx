@@ -1,7 +1,6 @@
 import { useRef, ChangeEventHandler } from 'react';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
-import { secondsToMs } from '../utils';
 
 export type OffsetControlProps = {
   onApplyOffsetClick: (offset: number) => void;
@@ -9,21 +8,13 @@ export type OffsetControlProps = {
   initialOffset: number;
 }>;
 
-function offsetToMs(offset: number) {
-  const sign = Math.sign(offset);
-  const absoluteOffset = Math.abs(offset);
-  const [seconds, milliseconds = 0] = String(absoluteOffset).split('.');
-
-  return (secondsToMs(seconds) + Number(milliseconds)) * sign;
-}
-
 export function OffsetControl({ initialOffset = 0, onApplyOffsetClick }: OffsetControlProps) {
   const offsetRef = useRef(initialOffset);
 
   const setOffset: ChangeEventHandler<HTMLInputElement> = (event) => {
     const offset = Number(event.target.value);
     if (!Number.isNaN(offset)) {
-      offsetRef.current = offsetToMs(offset);
+      offsetRef.current = offset;
     }
   };
 
@@ -40,8 +31,8 @@ export function OffsetControl({ initialOffset = 0, onApplyOffsetClick }: OffsetC
     <div>
       <Input
         name="offsetControl"
-        label='Enter offset in format "seconds.milliseconds"'
-        placeholder="0.00"
+        label="Enter offset in milliseconds"
+        placeholder="0"
         type="number"
         onChange={setOffset}
         defaultValue={getInputDefaultValue()}
