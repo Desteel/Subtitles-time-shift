@@ -17,28 +17,30 @@ function formatTimestampPart(part: number, partLength: number): string {
 const TIMESTAMP_PART_LENGTH = 2;
 const TIMESTAMP_MS_LENGTH = 3;
 
-function formatDateToTimestamp(date: Date): string {
-  const hours = formatTimestampPart(date.getUTCHours(), TIMESTAMP_PART_LENGTH);
-  const minutes = formatTimestampPart(date.getUTCMinutes(), TIMESTAMP_PART_LENGTH);
-  const seconds = formatTimestampPart(date.getUTCSeconds(), TIMESTAMP_PART_LENGTH);
-  const milliseconds = formatTimestampPart(date.getUTCMilliseconds(), TIMESTAMP_MS_LENGTH);
+export function formatTimePartsToTimestamp(hours: number, minutes: number, seconds: number, milliseconds: number) {
+  const formattedHours = formatTimestampPart(hours, TIMESTAMP_PART_LENGTH);
+  const formattedMinutes = formatTimestampPart(minutes, TIMESTAMP_PART_LENGTH);
+  const formattedSeconds = formatTimestampPart(seconds, TIMESTAMP_PART_LENGTH);
+  const formattedMilliseconds = formatTimestampPart(milliseconds, TIMESTAMP_MS_LENGTH);
 
-  const secondsAndMilliseconds = `${seconds}${TIMESTAMP_MS_SEPARATOR}${milliseconds}`;
+  const formattedSecondsAndMilliseconds = `${formattedSeconds}${TIMESTAMP_MS_SEPARATOR}${formattedMilliseconds}` as const;
 
-  return `${hours}${TIMESTAMP_PARTS_SEPARATOR}${minutes}${TIMESTAMP_PARTS_SEPARATOR}${secondsAndMilliseconds}`;
+  return `${formattedHours}${TIMESTAMP_PARTS_SEPARATOR}${formattedMinutes}${TIMESTAMP_PARTS_SEPARATOR}${formattedSecondsAndMilliseconds}` as const;
 }
 
-function shiftTimeStamp(timeStamp: string, offset: number): string {
+export function timestampToMilliseconds(timeStamp: string): number {
   const [hours, minutes, secondsAndMilliseconds] = timeStamp.split(TIMESTAMP_PARTS_SEPARATOR);
   const [seconds, milliseconds] = secondsAndMilliseconds.split(TIMESTAMP_MS_SEPARATOR);
 
-  const timeInMilliseconds = hoursToMs(hours) + minutesToMs(minutes) + secondsToMs(seconds) + Number(milliseconds);
+  return hoursToMs(hours) + minutesToMs(minutes) + secondsToMs(seconds) + Number(milliseconds);
+}
 
-  const updatedTimeInMilliseconds = timeInMilliseconds + offset;
+function shiftTimeStamp(timeStamp: string, offset: number): string {
+  const updatedTimeInMilliseconds = timestampToMilliseconds(timeStamp) + offset;
 
   const date = new Date(updatedTimeInMilliseconds);
 
-  return formatDateToTimestamp(date);
+  return formatTimePartsToTimestamp(date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds(), date.getUTCMilliseconds());
 }
 
 export function shiftTimeStampRange(timeStampRange: string, offset: number): string {

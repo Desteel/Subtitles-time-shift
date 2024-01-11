@@ -4,6 +4,7 @@ import { OffsetControl } from './OffsetControl';
 import { SRT_MIME_TYPE } from './constants';
 import { useTextBlob, useOpenTextFile } from './hooks';
 import { getTextWithUpdatedOffset } from './utils';
+import { OffsetCalculator } from './OffsetCalculator';
 
 const PICKER_OPTIONS: FilePickerOptions = {
   types: [{ accept: { [SRT_MIME_TYPE]: ['.srt'] } }],
@@ -34,6 +35,8 @@ export function ShiftTimestamp() {
 
   return (
     <div>
+      <OffsetCalculator />
+
       <Button onClick={() => openFile(OPEN_FILE_PICKER_OPTIONS)}>Open .srt file</Button>
 
       {!!fileName && <div>{fileName}</div>}
