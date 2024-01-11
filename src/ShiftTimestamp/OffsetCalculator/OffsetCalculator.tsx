@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { timestampToMilliseconds, formatTimePartsToTimestamp } from '../utils';
@@ -6,18 +6,21 @@ import { timestampToMilliseconds, formatTimePartsToTimestamp } from '../utils';
 const currentTimestampPlaceholder = formatTimePartsToTimestamp(0, 1, 2, 100);
 const desiredTimestampPlaceholder = formatTimePartsToTimestamp(0, 1, 2, 200);
 
+export type OffsetCalculatorProps = {
+  calculatedOffset: number;
+  onCalculateOffset: (calculatedOffset: number) => void;
+};
+
 // TODO: Validation is required
-export function OffsetCalculator() {
+export function OffsetCalculator({ calculatedOffset, onCalculateOffset }: OffsetCalculatorProps) {
   const currentTimestampRef = useRef('');
   const desiredTimestampRef = useRef('');
-
-  const [offset, setOffset] = useState(0);
 
   const calculateOffset = () => {
     const currentTimestampMilliseconds = timestampToMilliseconds(currentTimestampRef.current);
     const desiredTimestampMilliseconds = timestampToMilliseconds(desiredTimestampRef.current);
 
-    setOffset(desiredTimestampMilliseconds - currentTimestampMilliseconds);
+    onCalculateOffset(desiredTimestampMilliseconds - currentTimestampMilliseconds);
   };
 
   return (
@@ -41,7 +44,7 @@ export function OffsetCalculator() {
 
       <Button onClick={calculateOffset}>Calculate offset</Button>
 
-      <div>Offset value in milliseconds: {offset}</div>
+      <div>Offset value in milliseconds: {calculatedOffset}</div>
     </div>
   );
 }
