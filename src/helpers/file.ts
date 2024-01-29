@@ -1,3 +1,5 @@
+import { getTail } from './common';
+
 export async function getFile(options?: OpenFilePickerOptions) {
   try {
     const [fileHandle] = await window.showOpenFilePicker(options);
@@ -18,4 +20,10 @@ export async function saveToFile(data: FileSystemWriteChunkType, options?: SaveF
   } catch (error) {
     console.error(error);
   }
+}
+
+export function getFileExtension(fileName: string) {
+  const fileNameParts = fileName.split('.');
+
+  return getTail(fileNameParts);
 }

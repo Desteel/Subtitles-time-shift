@@ -9,10 +9,12 @@ const desiredTimestampPlaceholder = formatTimePartsToTimestamp(0, 1, 2, 200);
 export type OffsetCalculatorProps = {
   calculatedOffset: number;
   onCalculateOffset: (calculatedOffset: number) => void;
-};
+} & Partial<{
+  className: string;
+}>;
 
 // TODO: Validation is required
-export function OffsetCalculator({ calculatedOffset, onCalculateOffset }: OffsetCalculatorProps) {
+export function OffsetCalculator({ calculatedOffset, onCalculateOffset, className }: OffsetCalculatorProps) {
   const currentTimestampRef = useRef('');
   const desiredTimestampRef = useRef('');
 
@@ -24,7 +26,7 @@ export function OffsetCalculator({ calculatedOffset, onCalculateOffset }: Offset
   };
 
   return (
-    <div>
+    <div className={className}>
       <Input
         name="currentTimestamp"
         label="Enter current timestamp"
@@ -44,7 +46,7 @@ export function OffsetCalculator({ calculatedOffset, onCalculateOffset }: Offset
 
       <Button onClick={calculateOffset}>Calculate offset</Button>
 
-      <div>Offset value in milliseconds: {calculatedOffset}</div>
+      <div>Calculated offset (milliseconds): {calculatedOffset}</div>
     </div>
   );
 }

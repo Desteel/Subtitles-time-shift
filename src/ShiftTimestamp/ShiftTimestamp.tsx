@@ -1,14 +1,22 @@
-import { saveToFile } from '../helpers';
+import { getFileExtension, hasKeyIn, saveToFile } from '../helpers';
 import { Button } from '../components/Button';
 import { OffsetControl } from './OffsetControl';
-import { SRT_MIME_TYPE } from './constants';
+import { SUBTITLES_FILE_EXTENSIONS, SUBTITLES_MIME_TYPE } from './constants';
 import { useTextBlob, useOpenTextFile } from './hooks';
-import { getTextWithUpdatedOffset } from './utils';
 import { OffsetCalculator } from './OffsetCalculator';
 import { useState } from 'react';
+import { Info } from './Info';
+import './ShiftTimestamp.css';
+import { getSRTWithUpdatedOffset, getVTTWithUpdatedOffset } from './subtitles';
 
 const PICKER_OPTIONS: FilePickerOptions = {
-  types: [{ accept: { [SRT_MIME_TYPE]: ['.srt'] } }],
+  types: [
+    {
+      accept: {
+        [SUBTITLES_MIME_TYPE]: [`.${SUBTITLES_FILE_EXTENSIONS.SRT}`, `.${SUBTITLES_FILE_EXTENSIONS.VTT}`],
+      },
+    },
+  ],
   excludeAcceptAllOption: true,
 };
 
@@ -17,23 +25,27 @@ const OPEN_FILE_PICKER_OPTIONS: OpenFilePickerOptions = {
   multiple: false,
 };
 
+const SUBTITLES_OFFSET_UPDATERS = {
+  [SUBTITLES_FILE_EXTENSIONS.SRT]: getSRTWithUpdatedOffset,
+  [SUBTITLES_FILE_EXTENSIONS.VTT]: getVTTWithUpdatedOffset,
+} as const;
+
+function getOffsetUpdater(fileExtension: string) {
+  if (!hasKeyIn(SUBTITLES_OFFSET_UPDATERS, fileExtension)) {
+    throw new Error(`Invalid file extension: '${fileExtension}'.
+    Available extensions: ${Object.keys(SUBTITLES_OFFSET_UPDATERS).toString()}`);
+  }
+  return SUBTITLES_OFFSET_UPDATERS[fileExtension];
+}
+
 export function ShiftTimestamp() {
   const [calculatedOffset, setCalculatedOffset] = useState(0);
 
   const { file, text, openFile } = useOpenTextFile();
   const { textBlob, createTextBlob } = useTextBlob();
 
-  const fileName = file?.name;
-
-  const applyOffset = (offset: number) => {
-    if (!text) return;
-    const textWithUpdatedOffset = getTextWithUpdatedOffset(text, offset);
-    createTextBlob(textWithUpdatedOffset);
-  };
-
-  const handleSaveFileClick = async () => {
-    if (!textBlob) return;
-    await saveToFile(textBlob, { ...PICKER_OPTIONS, suggestedName: fileName });
+  const handleSaveFileClick = async (textBlob: Blob) => {
+    await saveToFile(textBlob, { ...PICKER_OPTIONS, suggestedName: file?.name });
   };
 
   const renderOffsetControls = () => {
@@ -42,6 +54,11 @@ export function ShiftTimestamp() {
     if (!text) {
       return <div>Content is not available</div>;
     }
+
+    const applyOffset = (offset: number) => {
+      const getSubtitlesWithUpdatedOffset = getOffsetUpdater(getFileExtension(file.name));
+      createTextBlob(getSubtitlesWithUpdatedOffset(text, offset));
+    };
 
     return (
       <>
@@ -53,15 +70,17 @@ export function ShiftTimestamp() {
 
   return (
     <div>
-      <OffsetCalculator calculatedOffset={calculatedOffset} onCalculateOffset={setCalculatedOffset} />
+      <Info />
 
-      <Button onClick={() => openFile(OPEN_FILE_PICKER_OPTIONS)}>Open .srt file</Button>
+      <OffsetCalculator calculatedOffset={calculatedOffset} onCalculateOffset={setCalculatedOffset} className="section" />
 
-      {!!fileName && <div>{fileName}</div>}
+      <Button onClick={() => openFile(OPEN_FILE_PICKER_OPTIONS)}>Open the subtitles file</Button>
+
+      {!!file?.name && <div>{file.name}</div>}
 
       {renderOffsetControls()}
 
-      {!!textBlob && <Button onClick={handleSaveFileClick}>Save updated .srt file</Button>}
+      {!!textBlob && <Button onClick={() => handleSaveFileClick(textBlob)}>Save the updated subtitles file</Button>}
     </div>
   );
 }
