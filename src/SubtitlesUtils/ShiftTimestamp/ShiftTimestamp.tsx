@@ -1,12 +1,10 @@
-import { getFileExtension, hasKeyIn, saveToFile } from '../helpers';
-import { Button } from '../components/Button';
+import { getFileExtension, hasKeyIn, saveToFile } from '../../helpers';
+import { Button } from '../../components/Button';
 import { OffsetControl } from './OffsetControl';
-import { SUBTITLES_FILE_EXTENSIONS, SUBTITLES_MIME_TYPE } from './constants';
-import { useTextBlob, useOpenTextFile } from './hooks';
+import { SUBTITLES_FILE_EXTENSIONS, SUBTITLES_MIME_TYPE } from '../constants';
+import { useTextBlob, useOpenTextFile } from '../hooks';
 import { OffsetCalculator } from './OffsetCalculator';
 import { useState } from 'react';
-import { Info } from './Info';
-import './ShiftTimestamp.css';
 import { getSRTWithUpdatedOffset, getVTTWithUpdatedOffset } from './subtitles';
 
 const PICKER_OPTIONS: FilePickerOptions = {
@@ -38,7 +36,11 @@ function getOffsetUpdater(fileExtension: string) {
   return SUBTITLES_OFFSET_UPDATERS[fileExtension];
 }
 
-export function ShiftTimestamp() {
+export type ShiftTimestampProps = Partial<{
+  className: string;
+}>;
+
+export function ShiftTimestamp({ className }: ShiftTimestampProps) {
   const [calculatedOffset, setCalculatedOffset] = useState(0);
 
   const { file, text, openFile } = useOpenTextFile();
@@ -69,10 +71,8 @@ export function ShiftTimestamp() {
   };
 
   return (
-    <div>
-      <Info />
-
-      <OffsetCalculator calculatedOffset={calculatedOffset} onCalculateOffset={setCalculatedOffset} className="section" />
+    <div className={className}>
+      <OffsetCalculator calculatedOffset={calculatedOffset} onCalculateOffset={setCalculatedOffset} />
 
       <Button onClick={() => openFile(OPEN_FILE_PICKER_OPTIONS)}>Open the subtitles file</Button>
 

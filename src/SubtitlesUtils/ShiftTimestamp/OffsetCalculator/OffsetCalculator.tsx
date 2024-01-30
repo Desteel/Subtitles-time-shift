@@ -1,6 +1,6 @@
 import { useRef } from 'react';
-import { Button } from '../../components/Button';
-import { Input } from '../../components/Input';
+import { Button } from '../../../components/Button';
+import { Input } from '../../../components/Input';
 import { timestampToMilliseconds, formatTimePartsToTimestamp } from '../utils';
 
 const currentTimestampPlaceholder = formatTimePartsToTimestamp(0, 1, 2, 100);
