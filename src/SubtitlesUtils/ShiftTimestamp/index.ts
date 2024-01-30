@@ -1,1 +1,1 @@
-export { ShiftTimestamp } from './ShiftTimestamp';
+export { ShiftTimestamp, type ShiftTimestampProps } from './ShiftTimestamp';
