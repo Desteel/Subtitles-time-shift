@@ -4,12 +4,13 @@ import './Button.css';
 export type ButtonProps = {
   onClick: () => void;
 } & Partial<{
+  disabled: boolean;
   children: ReactNode;
 }>;
 
-export function Button({ children, onClick }: ButtonProps) {
+export function Button({ children, disabled, onClick }: ButtonProps) {
   return (
-    <button onClick={onClick} className="button">
+    <button onClick={onClick} className="button" disabled={disabled}>
       {children}
     </button>
   );

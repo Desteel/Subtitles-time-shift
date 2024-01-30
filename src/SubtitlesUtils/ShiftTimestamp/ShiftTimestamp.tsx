@@ -1,33 +1,18 @@
 import { getFileExtension, hasKeyIn, saveToFile } from '../../helpers';
 import { Button } from '../../components/Button';
 import { OffsetControl } from './OffsetControl';
-import { SUBTITLES_FILE_EXTENSIONS, SUBTITLES_MIME_TYPE } from '../constants';
+import { OPEN_FILE_PICKER_OPTIONS, PICKER_OPTIONS, SUBTITLES_FILE_EXTENSIONS } from '../constants';
 import { useTextBlob, useOpenTextFile } from '../hooks';
 import { OffsetCalculator } from './OffsetCalculator';
 import { useState } from 'react';
 import { getSRTWithUpdatedOffset, getVTTWithUpdatedOffset } from './subtitles';
-
-const PICKER_OPTIONS: FilePickerOptions = {
-  types: [
-    {
-      accept: {
-        [SUBTITLES_MIME_TYPE]: [`.${SUBTITLES_FILE_EXTENSIONS.SRT}`, `.${SUBTITLES_FILE_EXTENSIONS.VTT}`],
-      },
-    },
-  ],
-  excludeAcceptAllOption: true,
-};
-
-const OPEN_FILE_PICKER_OPTIONS: OpenFilePickerOptions = {
-  ...PICKER_OPTIONS,
-  multiple: false,
-};
 
 const SUBTITLES_OFFSET_UPDATERS = {
   [SUBTITLES_FILE_EXTENSIONS.SRT]: getSRTWithUpdatedOffset,
   [SUBTITLES_FILE_EXTENSIONS.VTT]: getVTTWithUpdatedOffset,
 } as const;
 
+// TODO: Add extensions guard
 function getOffsetUpdater(fileExtension: string) {
   if (!hasKeyIn(SUBTITLES_OFFSET_UPDATERS, fileExtension)) {
     throw new Error(`Invalid file extension: '${fileExtension}'.
