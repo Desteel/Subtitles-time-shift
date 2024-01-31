@@ -2,14 +2,15 @@ import { Button } from '../../components/Button';
 import { getFileExtension } from '../../helpers';
 import { OPEN_FILE_PICKER_OPTIONS, SUBTITLES_FILE_EXTENSIONS, SUBTITLES_MIME_TYPE } from '../constants';
 import { useOpenTextFile } from '../hooks';
-import cn from 'classnames';
 import './SubtitlesSync.css';
+import { SubtitlesColumn } from './SubtitlesColumn';
+import { useSplittedSubtitles } from './hooks';
 
 export type SubtitlesSyncProps = Partial<{
   className: string;
 }>;
 
-// TODO: fix `Cannot find name 'FileExtension'.`
+// TODO: fix bundler error `Cannot find name 'FileExtension'.`
 function createPickerOptions({ fileExtension }: { fileExtension: `.${string}` }): FilePickerOptions {
   return {
     ...OPEN_FILE_PICKER_OPTIONS,
@@ -23,40 +24,15 @@ function createPickerOptions({ fileExtension }: { fileExtension: `.${string}` })
   };
 }
 
-export function SubtitlesSection({
-  buttonText,
-  content,
-  onClick,
-}: {
-  buttonText: string;
-  onClick: () => void;
-  content?: string;
-  disabled?: boolean;
-}) {
-  const splittedText = content?.split(/\n/g);
-
-  return (
-    <div>
-      <Button onClick={onClick}>{buttonText}</Button>
-
-      {splittedText ? (
-        <div>
-          {splittedText.map((line, index) => {
-            if (!line) return <br />;
-            return <div key={index}>{line}</div>;
-          })}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
 // TODO: Add extensions guard
 export const subtitlesFileExtensions = new Set<string>(Object.values(SUBTITLES_FILE_EXTENSIONS));
 
 export function SubtitlesSync({ className }: SubtitlesSyncProps) {
   const { file: sourceFile, text: sourceText, openFile: openSourceFile } = useOpenTextFile();
   const { file: syncFile, text: syncText, openFile: openSyncFile } = useOpenTextFile();
+
+  const { parts: subtitlesSource } = useSplittedSubtitles(sourceText);
+  const { parts: subtitlesToSync } = useSplittedSubtitles(syncText);
 
   const openSubtitlesSource = () => {
     openSourceFile(OPEN_FILE_PICKER_OPTIONS);
@@ -75,9 +51,38 @@ export function SubtitlesSync({ className }: SubtitlesSyncProps) {
   };
 
   return (
-    <div className={cn('container', className)}>
-      <SubtitlesSection buttonText="Open the source subtitles file" content={sourceText} onClick={openSubtitlesSource} />
-      <SubtitlesSection buttonText="Open the subtitles file to sync" content={syncText} onClick={openSubtitlesToSync} disabled={!sourceFile} />
+    <div className={className}>
+      <div className="grid2cl">
+        <FileControl onClick={openSubtitlesSource} name="Open the source subtitles file" fileName={sourceFile?.name} />
+        <FileControl onClick={openSubtitlesToSync} name="Open the subtitles file to sync" fileName={syncFile?.name} disabled={!sourceFile} />
+      </div>
+
+      {subtitlesSource && subtitlesToSync ? (
+        <div className="grid2cl">
+          <SubtitlesColumn subtitles={subtitlesSource} />
+          <SubtitlesColumn subtitles={subtitlesToSync} />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+export type FileControlProps = {
+  name: string;
+  onClick: () => void;
+} & Partial<{
+  disabled: boolean;
+  fileName: string;
+}>;
+
+export function FileControl({ name, onClick, fileName, disabled }: FileControlProps) {
+  return (
+    <div>
+      <Button onClick={onClick} disabled={disabled}>
+        {name}
+      </Button>
+
+      {fileName && <span>{fileName}</span>}
     </div>
   );
 }

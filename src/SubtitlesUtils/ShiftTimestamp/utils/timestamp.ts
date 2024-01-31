@@ -1,5 +1,6 @@
 import { hoursToMs, minutesToMs, secondsToMs } from './time';
 
+// TODO: Remove unused code
 const TIMESTAMP_RANGE_SEPARATOR = ' --> ' as const;
 const TIMESTAMP_PARTS_SEPARATOR = ':' as const;
 const TIMESTAMP_MS_SEPARATOR = ',' as const;
