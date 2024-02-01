@@ -46,17 +46,22 @@ function splitSubtitlesByParts(text: string): Part[] {
   const parts: Part[] = [];
   const partBuilder = createPartBuilder();
 
+  const handleTimestamp = (timestamp: string) => {
+    if (partBuilder.checkIsFilled()) {
+      parts.push(partBuilder.getPart());
+    }
+    partBuilder.setTimestamp(timestamp);
+  };
+
   for (let i = 0; i < length; i++) {
     const line = textLines[i];
 
     // TODO: Use strategy instead
     if (checkIsVTTTimeStampRange(line)) {
-      if (partBuilder.checkIsFilled()) {
-        parts.push(partBuilder.getPart());
-      }
-      partBuilder.setTimestamp(line);
+      handleTimestamp(line);
+    } else {
+      partBuilder.addTextline(line);
     }
-    partBuilder.addTextline(line);
   }
 
   return parts;
