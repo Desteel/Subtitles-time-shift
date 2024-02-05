@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { splitTextByLineBreak } from '../../helpers';
-import { checkIsVTTTimeStampRange } from '../../subtitles';
+import { VTTTimestampRange, checkIsVTTTimeStampRange } from '../../subtitles';
 
 export type Part = {
-  timestamp?: string;
+  timestampRange?: string;
   textLines: string[];
 };
 
@@ -15,15 +15,15 @@ function createPartBuilder() {
   let part: Part = createEmptyPart();
 
   const checkIsFilled = () => {
-    return !!(part.timestamp || part.textLines.length > 0);
+    return !!(part.timestampRange || part.textLines.length > 0);
   };
 
   const reset = () => {
     part = createEmptyPart();
   };
 
-  const setTimestamp = (timestamp: string) => {
-    part.timestamp = timestamp;
+  const setTimestampRange = (timestampRange: string) => {
+    part.timestampRange = timestampRange;
   };
 
   const addTextline = (textline: string) => {
@@ -36,7 +36,7 @@ function createPartBuilder() {
     return result;
   };
 
-  return { setTimestamp, addTextline, reset, checkIsFilled, getPart };
+  return { setTimestampRange, addTextline, reset, checkIsFilled, getPart };
 }
 
 function splitSubtitlesByParts(text: string): Part[] {
@@ -46,11 +46,11 @@ function splitSubtitlesByParts(text: string): Part[] {
   const parts: Part[] = [];
   const partBuilder = createPartBuilder();
 
-  const handleTimestamp = (timestamp: string) => {
+  const handleTimestamp = (timestampRange: VTTTimestampRange) => {
     if (partBuilder.checkIsFilled()) {
       parts.push(partBuilder.getPart());
     }
-    partBuilder.setTimestamp(timestamp);
+    partBuilder.setTimestampRange(timestampRange);
   };
 
   for (let i = 0; i < length; i++) {

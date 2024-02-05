@@ -1,12 +1,12 @@
 import { splitTextByLineBreak } from '../../helpers';
-import { VTT_TIMESTAMP_SEPARATORS, checkIsVTTTimeStampRange } from '../../subtitles';
+import { VTTTimestampDefault, VTTTimestampRangeTemplate, VTT_TIMESTAMP_SEPARATORS, checkIsVTTTimeStampRange } from '../../subtitles';
 import { hoursToMs, minutesToMs, secondsToMs } from '../utils';
 import { formatTimestampPart } from './common';
 
 const TIMESTAMP_PART_LENGTH = 2;
 const TIMESTAMP_MS_LENGTH = 3;
 
-function formatTimePartsToTimestamp(hours: number, minutes: number, seconds: number, milliseconds: number) {
+function formatTimePartsToTimestamp(hours: number, minutes: number, seconds: number, milliseconds: number): VTTTimestampDefault {
   const formattedHours = formatTimestampPart(hours, TIMESTAMP_PART_LENGTH);
   const formattedMinutes = formatTimestampPart(minutes, TIMESTAMP_PART_LENGTH);
   const formattedSeconds = formatTimestampPart(seconds, TIMESTAMP_PART_LENGTH);
@@ -17,28 +17,32 @@ function formatTimePartsToTimestamp(hours: number, minutes: number, seconds: num
   return `${formattedHours}${VTT_TIMESTAMP_SEPARATORS.PARTS}${formattedMinutes}${VTT_TIMESTAMP_SEPARATORS.PARTS}${formattedSecondsAndMilliseconds}` as const;
 }
 
-function timestampToMilliseconds(timeStamp: string): number {
+function timestampToMilliseconds(timeStamp: VTTTimestampDefault): number {
   const [hours, minutes, secondsAndMilliseconds] = timeStamp.split(VTT_TIMESTAMP_SEPARATORS.PARTS);
   const [seconds, milliseconds] = secondsAndMilliseconds.split(VTT_TIMESTAMP_SEPARATORS.MS);
 
   return hoursToMs(hours) + minutesToMs(minutes) + secondsToMs(seconds) + Number(milliseconds);
 }
 
-function shiftTimeStamp(timeStamp: string, offset: number) {
+function shiftTimeStamp(timeStamp: VTTTimestampDefault, offset: number): VTTTimestampDefault {
   const updatedTimeInMilliseconds = timestampToMilliseconds(timeStamp) + offset;
   const date = new Date(updatedTimeInMilliseconds);
 
   return formatTimePartsToTimestamp(date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds(), date.getUTCMilliseconds());
 }
 
-function proccessTimeStampRange<CallbackResult extends string>(
-  timeStampRange: string,
+function proccessTimeStampRange<
+  TimeStampRange extends VTTTimestampRangeTemplate<string>,
+  CallbackResult extends string,
+  TimeStamp extends string = TimeStampRange extends VTTTimestampRangeTemplate<infer A> ? A : never
+>(
+  timeStampRange: TimeStampRange,
   offset: number,
-  callback: (timeStamp: string, offset: number) => CallbackResult
-) {
-  const [start, end] = timeStampRange.split(VTT_TIMESTAMP_SEPARATORS.RANGE);
+  callback: (timeStamp: TimeStamp, offset: number) => CallbackResult
+): VTTTimestampRangeTemplate<CallbackResult> {
+  const [start, end] = timeStampRange.split(VTT_TIMESTAMP_SEPARATORS.RANGE) as [TimeStamp, TimeStamp];
 
-  const shift = (timeStamp: string) => {
+  const shift = (timeStamp: TimeStamp) => {
     return callback(timeStamp, offset);
   };
 
