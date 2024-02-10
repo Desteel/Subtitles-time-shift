@@ -1,10 +1,10 @@
-import { SubtitlesUtils } from './SubtitlesUtils';
+import { SubtitlesTools } from 'pages/SubtitlesTools';
 
 function App() {
   return (
-    <div>
-      <SubtitlesUtils />
-    </div>
+    <main>
+      <SubtitlesTools />
+    </main>
   );
 }
 
