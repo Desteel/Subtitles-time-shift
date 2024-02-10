@@ -1,1 +1,1 @@
-export * from './filePicker.constants';
+export * from './filePicker';

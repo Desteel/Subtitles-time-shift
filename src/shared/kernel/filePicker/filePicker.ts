@@ -5,6 +5,8 @@ export const SUBTITLES_FILE_EXTENSIONS = {
   VTT: 'vtt',
 } as const;
 
+export type SubtitlesFileExtension = ObjectValuesUnion<typeof SUBTITLES_FILE_EXTENSIONS>;
+
 export const PICKER_OPTIONS: FilePickerOptions = {
   types: [
     {
