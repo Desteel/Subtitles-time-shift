@@ -1,10 +1,10 @@
-import { ShiftTimestamp } from './ShiftTimestamp';
+import { SubtitlesTools } from 'pages/SubtitlesTools';
 
 function App() {
   return (
-    <div>
-      <ShiftTimestamp />
-    </div>
+    <main>
+      <SubtitlesTools />
+    </main>
   );
 }
 

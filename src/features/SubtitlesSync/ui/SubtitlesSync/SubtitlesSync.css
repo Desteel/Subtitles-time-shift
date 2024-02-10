@@ -1,0 +1,14 @@
+.grid2cl {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.editorInput {
+  display: block;
+  width: 100%;
+}
+
+.subtitlesText {
+  display: block;
+}

@@ -1,0 +1,9 @@
+.gridColumn {
+  display: grid;
+  grid-template-rows: subgrid;
+}
+
+.subtitlesRow {
+  margin-block: 0;
+  border: 1px solid grey;
+}
