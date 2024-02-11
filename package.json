@@ -21,13 +21,156 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "lint": "eslint ./src --ext .ts,.tsx --cache",
+    "lint-fix": "npm run lint -- --fix"
   },
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "plugins": [
+      "import"
+    ],
+    "rules": {
+      "import/no-named-as-default": "warn",
+      "import/no-self-import": "error",
+      "import/no-unassigned-import": [
+        "error",
+        {
+          "allow": [
+            "**/*.css"
+          ]
+        }
+      ],
+      "import/no-useless-path-segments": [
+        "error",
+        {
+          "noUselessIndex": true
+        }
+      ],
+      "import/no-duplicates": [
+        "error",
+        {
+          "prefer-inline": true
+        }
+      ],
+      "import/no-cycle": [
+        "error",
+        {
+          "ignoreExternal": true
+        }
+      ],
+      "import/order": [
+        "error",
+        {
+          "groups": [
+            "builtin",
+            "external",
+            "internal",
+            "parent",
+            "sibling",
+            "index",
+            "object",
+            "type"
+          ],
+          "alphabetize": {
+            "order": "asc"
+          }
+        }
+      ],
+      "import/no-restricted-paths": [
+        "error",
+        {
+          "zones": [
+            {
+              "target": "./src/shared/**",
+              "from": "./src/**",
+              "except": [
+                "**/src/shared/**"
+              ],
+              "message": "'shared' cannot contain external imports"
+            },
+            {
+              "target": "./src/features/*/core/**",
+              "from": "./src/**",
+              "except": [
+                "**/src/shared/**",
+                "**/src/features/*/core/**"
+              ],
+              "message": "External imports within 'core' are only allowed from 'shared'"
+            },
+            {
+              "target": "./src/features/*/core/domain/**",
+              "from": "./src/**",
+              "except": [
+                "**/src/shared/**",
+                "**/src/features/*/core/domain/**"
+              ],
+              "message": "External imports within 'domain' are only allowed from 'shared'"
+            }
+          ]
+        }
+      ],
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            {
+              "group": [
+                "**/core",
+                "!**/./core",
+                "!**/../core"
+              ],
+              "message": "'core' cross-imports are restricted"
+            }
+          ]
+        }
+      ]
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/setupTests.*"
+        ],
+        "rules": {
+          "import/no-unassigned-import": [
+            "error",
+            {
+              "allow": [
+                "@testing-library/jest-dom"
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "settings": {
+      "import/parsers": {
+        "@typescript-eslint/parser": [
+          ".ts",
+          ".tsx"
+        ]
+      },
+      "import/resolver": {
+        "typescript": {
+          "alwaysTryTypes": true
+        },
+        "node": {
+          "paths": [
+            "src"
+          ],
+          "extensions": [
+            ".ts",
+            ".tsx"
+          ],
+          "moduleDirectory": [
+            "node_modules",
+            "src/"
+          ]
+        }
+      }
+    }
   },
   "browserslist": {
     "production": [
@@ -42,6 +185,8 @@
     ]
   },
   "devDependencies": {
-    "@types/wicg-file-system-access": "^2023.10.4"
+    "@types/wicg-file-system-access": "^2023.10.4",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.1"
   }
 }

@@ -1,5 +1,5 @@
-import { VTTTimestampRange, checkIsVTTTimeStampRange } from 'shared/kernel/subtitles';
 import { splitTextByLineBreak } from 'shared/helpers';
+import { VTTTimestampRange, checkIsVTTTimeStampRange } from 'shared/kernel/subtitles';
 
 export type SubtitlesPart = {
   timestampRange?: string;

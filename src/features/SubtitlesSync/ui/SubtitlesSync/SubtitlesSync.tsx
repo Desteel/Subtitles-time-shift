@@ -1,15 +1,15 @@
-import { Button } from 'shared/ui/Button';
+import { memo } from 'react';
 import { getFileExtension } from 'shared/helpers';
+import { useOpenTextFile } from 'shared/hooks';
 import {
   OPEN_FILE_PICKER_OPTIONS,
   SUBTITLES_FILE_EXTENSIONS,
   SUBTITLES_MIME_TYPE,
 } from 'shared/kernel/filePicker';
-import { useOpenTextFile } from 'shared/hooks';
-import './SubtitlesSync.css';
-import { SubtitlesColumn } from '../SubtitlesColumn';
-import { memo } from 'react';
+import { Button } from 'shared/ui/Button';
 import { useGetSubtitlesParts } from '../../core/getSubtitlesParts';
+import { SubtitlesColumn } from '../SubtitlesColumn';
+import './SubtitlesSync.css';
 
 const SubtitlesColumnMemo = memo(SubtitlesColumn);
 

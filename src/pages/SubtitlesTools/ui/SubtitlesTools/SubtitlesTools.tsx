@@ -1,6 +1,6 @@
-import { Info } from '../Info';
 import { ShiftTimestamp } from 'features/ShiftTimestamp';
 import { SubtitlesSync } from 'features/SubtitlesSync';
+import { Info } from '../Info';
 import './SubtitlesTools.css';
 
 export function SubtitlesTools() {

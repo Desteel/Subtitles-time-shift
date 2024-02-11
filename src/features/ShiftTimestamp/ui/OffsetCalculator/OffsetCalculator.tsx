@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
+import { SRTTimestamp, checkIsSRTTimeStampRange } from 'shared/kernel/subtitles';
 import { Button } from 'shared/ui/Button';
 import { Input } from 'shared/ui/Input';
-import { SRTTimestamp, checkIsSRTTimeStampRange } from 'shared/kernel/subtitles';
 import { timestampToMilliseconds } from '../../core/domain/srt';
 
 // TODO: Add different extensions support

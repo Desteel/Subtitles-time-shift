@@ -1,16 +1,16 @@
+import { useState } from 'react';
 import { getFileExtension, hasKeyIn, saveToFile } from 'shared/helpers';
-import { Button } from 'shared/ui/Button';
-import { OffsetControl } from '../OffsetControl';
+import { useTextBlob, useOpenTextFile } from 'shared/hooks';
 import {
   OPEN_FILE_PICKER_OPTIONS,
   PICKER_OPTIONS,
   SUBTITLES_FILE_EXTENSIONS,
 } from 'shared/kernel/filePicker';
-import { useTextBlob, useOpenTextFile } from 'shared/hooks';
-import { OffsetCalculator } from '../OffsetCalculator';
-import { useState } from 'react';
+import { Button } from 'shared/ui/Button';
 import { getSRTWithUpdatedOffset } from '../../core/domain/srt';
 import { getVTTWithUpdatedOffset } from '../../core/domain/vtt';
+import { OffsetCalculator } from '../OffsetCalculator';
+import { OffsetControl } from '../OffsetControl';
 
 const SUBTITLES_OFFSET_UPDATERS = {
   [SUBTITLES_FILE_EXTENSIONS.SRT]: getSRTWithUpdatedOffset,
